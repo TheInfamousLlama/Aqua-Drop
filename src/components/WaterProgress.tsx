@@ -7,9 +7,10 @@ interface WaterProgressProps {
   goal: number;
   percentage: number;
   isGoalMet: boolean;
+  isDarkMode?: boolean;
 }
 
-const WaterProgress = ({ current, goal, percentage, isGoalMet }: WaterProgressProps) => {
+const WaterProgress = ({ current, goal, percentage, isGoalMet, isDarkMode = false }: WaterProgressProps) => {
   const radius = 120;
   const circumference = 2 * Math.PI * radius;
   const strokeDasharray = circumference;
@@ -29,7 +30,7 @@ const WaterProgress = ({ current, goal, percentage, isGoalMet }: WaterProgressPr
             cx="128"
             cy="128"
             r={radius}
-            stroke="rgba(59, 130, 246, 0.1)"
+            stroke={isDarkMode ? "rgba(59, 130, 246, 0.2)" : "rgba(59, 130, 246, 0.1)"}
             strokeWidth="12"
             fill="transparent"
             className="drop-shadow-sm"
@@ -62,18 +63,18 @@ const WaterProgress = ({ current, goal, percentage, isGoalMet }: WaterProgressPr
         {/* Center Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <div className={`p-4 rounded-full mb-2 transition-all duration-500 ${
-            isGoalMet ? 'bg-green-100 scale-110' : 'bg-blue-100'
+            isGoalMet ? 'bg-green-100 scale-110' : isDarkMode ? 'bg-blue-900/50' : 'bg-blue-100'
           }`}>
             <Droplets className={`w-8 h-8 transition-colors duration-500 ${
               isGoalMet ? 'text-green-500' : 'text-blue-500'
             }`} />
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-gray-800 mb-1">
+            <div className={`text-3xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
               {current}
-              <span className="text-lg text-gray-500">ml</span>
+              <span className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>ml</span>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
               of {goal}ml
             </div>
             <div className={`text-lg font-semibold mt-1 transition-colors duration-500 ${
@@ -102,7 +103,7 @@ const WaterProgress = ({ current, goal, percentage, isGoalMet }: WaterProgressPr
             🎉 Goal Achieved! Amazing work!
           </p>
         ) : (
-          <p className="text-gray-600">
+          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>
             {goal - current}ml to go • You're doing great!
           </p>
         )}

@@ -13,9 +13,10 @@ interface DrinkEntry {
 
 interface DrinkHistoryProps {
   drinks: DrinkEntry[];
+  isDarkMode?: boolean;
 }
 
-const DrinkHistory = ({ drinks }: DrinkHistoryProps) => {
+const DrinkHistory = ({ drinks, isDarkMode = false }: DrinkHistoryProps) => {
   const getIcon = (type: string) => {
     switch (type) {
       case 'coffee': return Coffee;
@@ -42,25 +43,33 @@ const DrinkHistory = ({ drinks }: DrinkHistoryProps) => {
 
   if (drinks.length === 0) {
     return (
-      <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+      <Card className={`p-6 border-0 shadow-lg transition-colors duration-500 ${
+        isDarkMode 
+          ? 'bg-slate-800/80 backdrop-blur-sm' 
+          : 'bg-white/80 backdrop-blur-sm'
+      }`}>
         <div className="flex items-center gap-2 mb-4">
           <Clock className="w-5 h-5 text-blue-500" />
-          <h3 className="font-semibold text-gray-800">Recent Drinks</h3>
+          <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Recent Drinks</h3>
         </div>
         <div className="text-center py-8">
-          <Droplets className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No drinks logged yet today</p>
-          <p className="text-sm text-gray-400">Start hydrating to see your history!</p>
+          <Droplets className={`w-12 h-12 mx-auto mb-3 ${isDarkMode ? 'text-gray-600' : 'text-gray-300'}`} />
+          <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>No drinks logged yet today</p>
+          <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Start hydrating to see your history!</p>
         </div>
       </Card>
     );
   }
 
   return (
-    <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+    <Card className={`p-6 border-0 shadow-lg transition-colors duration-500 ${
+      isDarkMode 
+        ? 'bg-slate-800/80 backdrop-blur-sm' 
+        : 'bg-white/80 backdrop-blur-sm'
+    }`}>
       <div className="flex items-center gap-2 mb-4">
         <Clock className="w-5 h-5 text-blue-500" />
-        <h3 className="font-semibold text-gray-800">Recent Drinks</h3>
+        <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Recent Drinks</h3>
       </div>
 
       <div className="space-y-3">
@@ -71,17 +80,21 @@ const DrinkHistory = ({ drinks }: DrinkHistoryProps) => {
           return (
             <div
               key={drink.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+              className={`flex items-center justify-between p-3 rounded-xl transition-colors ${
+                isDarkMode 
+                  ? 'bg-slate-700/50 hover:bg-slate-600/50' 
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
             >
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${getColor(drink.type)} bg-opacity-10`}>
                   <Icon className={`w-4 h-4 ${getColor(drink.type)}`} />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-800 capitalize">
+                  <p className={`font-medium capitalize ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                     {drink.type} • {drink.amount}ml
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     {formatTime(drink.timestamp)}
                     {drink.multiplier !== 1 && (
                       <span className="ml-2">
@@ -101,7 +114,7 @@ const DrinkHistory = ({ drinks }: DrinkHistoryProps) => {
 
       {drinks.length >= 5 && (
         <div className="mt-4 text-center">
-          <p className="text-sm text-gray-500">Showing recent 5 drinks</p>
+          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Showing recent 5 drinks</p>
         </div>
       )}
     </Card>
