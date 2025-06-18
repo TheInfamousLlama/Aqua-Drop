@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Droplets, Plus, Target, Trophy, TrendingUp, RotateCcw, Sun, Moon, Coins, Store } from 'lucide-react';
+import { Droplets, Plus, Target, Trophy, TrendingUp, RotateCcw, Sun, Moon, Coins, Store, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import WaterProgress from '@/components/WaterProgress';
 import QuickAddButtons from '@/components/QuickAddButtons';
@@ -31,6 +32,7 @@ const Index = () => {
   const [unlockedThemes, setUnlockedThemes] = useState<string[]>(['default']);
   const [currentTheme, setCurrentTheme] = useState('default');
   const [unlockedFeatures, setUnlockedFeatures] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState('overview');
   const { toast } = useToast();
 
   // Load data from localStorage on component mount
@@ -184,27 +186,11 @@ const Index = () => {
     }
   };
 
-  const getHeaderStyles = () => {
-    const baseClasses = "text-white p-8 rounded-b-[3rem] shadow-2xl backdrop-blur-sm transition-all duration-1000 border-b";
-    
-    switch (currentTheme) {
-      case 'ocean':
-        return `${baseClasses} bg-gradient-to-r from-blue-600/85 to-cyan-600/85 border-blue-300/30`;
-      case 'sunset':
-        return `${baseClasses} bg-gradient-to-r from-orange-600/85 to-pink-600/85 border-orange-300/30`;
-      case 'forest':
-        return `${baseClasses} bg-gradient-to-r from-green-600/85 to-emerald-600/85 border-green-300/30`;
-      default:
-        return `${baseClasses} ${isDarkMode 
-          ? 'bg-gradient-to-r from-blue-800/85 to-cyan-700/85 border-white/20' 
-          : 'bg-gradient-to-r from-blue-500/85 to-cyan-500/85 border-white/30'
-        }`;
-    }
-  };
-
   const handleThemeSwitch = (themeName: string) => {
     setCurrentTheme(themeName);
   };
+
+  const hasEliteBadges = unlockedFeatures.includes('premium-badges');
 
   return (
     <div className={getThemeStyles()}>
@@ -214,18 +200,18 @@ const Index = () => {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
             backgroundImage: `url(${getThemeBackgroundImage()})`,
-            filter: isDarkMode ? 'brightness(0.4) contrast(1.3)' : 'brightness(0.8) contrast(1.2)'
+            filter: isDarkMode ? 'brightness(0.6) contrast(1.1)' : 'brightness(0.9) contrast(1.1)'
           }}
         />
       )}
       
       {/* Content Overlay */}
       <div className="relative z-10">
-        {/* Premium Header */}
-        <div className={getHeaderStyles()}>
+        {/* Simple Header Box */}
+        <div className="text-white p-8 rounded-b-[3rem] shadow-2xl backdrop-blur-sm transition-all duration-1000 border-b bg-black/20 backdrop-blur-xl border-white/10">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-5">
-              <div className="p-4 bg-white/20 rounded-3xl backdrop-blur-sm border border-white/30 shadow-xl">
+              <div className="p-4 bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20 shadow-xl">
                 <Droplets className="w-10 h-10" />
               </div>
               <div>
@@ -276,21 +262,21 @@ const Index = () => {
 
           {/* Luxury Stats Grid */}
           <div className="grid grid-cols-3 gap-6 mb-6">
-            <div className="flex items-center gap-4 bg-white/15 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg">
+            <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/15 shadow-lg">
               <Trophy className="w-8 h-8 text-yellow-300" />
               <div>
                 <p className="font-bold text-2xl">{streak}</p>
                 <p className="text-blue-100 text-sm">Day Streak</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 bg-white/15 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg">
+            <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/15 shadow-lg">
               <Coins className="w-8 h-8 text-yellow-400" />
               <div>
                 <p className="font-bold text-2xl">{aquaCoins}</p>
                 <p className="text-blue-100 text-sm">Aqua Coins</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 bg-white/15 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg">
+            <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/15 shadow-lg">
               <TrendingUp className="w-8 h-8 text-green-300" />
               <div>
                 <p className="font-bold text-2xl">{progressPercentage.toFixed(0)}%</p>
@@ -301,62 +287,106 @@ const Index = () => {
         </div>
 
         <div className="p-8 space-y-10">
-          {/* Water Progress Circle */}
-          <WaterProgress
-            current={currentIntake}
-            goal={dailyGoal}
-            percentage={progressPercentage}
-            isGoalMet={isGoalMet}
-            isDarkMode={isDarkMode}
-          />
+          {/* Navigation Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur-sm border border-white/10">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-white/20">Overview</TabsTrigger>
+              <TabsTrigger value="achievements" className="data-[state=active]:bg-white/20">Achievements</TabsTrigger>
+              {unlockedFeatures.includes('analytics-pro') && (
+                <TabsTrigger value="analytics" className="data-[state=active]:bg-white/20">Analytics</TabsTrigger>
+              )}
+            </TabsList>
 
-          {/* Quick Add Buttons */}
-          <QuickAddButtons onAddWater={addWater} isDarkMode={isDarkMode} />
+            <TabsContent value="overview" className="space-y-10">
+              {/* Water Progress Circle */}
+              <WaterProgress
+                current={currentIntake}
+                goal={dailyGoal}
+                percentage={progressPercentage}
+                isGoalMet={isGoalMet}
+                isDarkMode={isDarkMode}
+              />
 
-          {/* Today's Progress Stats */}
-          <Card className={`p-8 border-0 shadow-2xl backdrop-blur-sm transition-all duration-700 rounded-3xl ${
-            isDarkMode 
-              ? 'bg-slate-800/80 backdrop-blur-sm text-white border border-white/20' 
-              : 'bg-white/80 backdrop-blur-sm border border-white/40'
-          }`}>
-            <div className="flex items-center gap-3 mb-6">
-              <TrendingUp className="w-7 h-7 text-blue-500" />
-              <h3 className={`font-bold text-2xl ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Today's Progress</h3>
-            </div>
-            <div className="space-y-6">
-              <div className="flex justify-between text-lg">
-                <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Current Intake</span>
-                <span className="font-bold text-blue-600">{currentIntake}ml</span>
-              </div>
-              <div className="flex justify-between text-lg">
-                <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Daily Goal</span>
-                <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{dailyGoal}ml</span>
-              </div>
-              <div className="flex justify-between text-lg">
-                <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Remaining</span>
-                <span className="font-bold text-orange-500">
-                  {Math.max(0, dailyGoal - currentIntake)}ml
-                </span>
-              </div>
-              <Progress value={progressPercentage} className="h-4 rounded-full" />
-              <p className={`text-sm text-center font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                {progressPercentage.toFixed(0)}% complete
-              </p>
-            </div>
-          </Card>
+              {/* Quick Add Buttons */}
+              <QuickAddButtons onAddWater={addWater} isDarkMode={isDarkMode} />
 
-          {/* Achievements */}
-          <Achievements 
-            currentIntake={currentIntake} 
-            dailyGoal={dailyGoal} 
-            streak={streak} 
-            isDarkMode={isDarkMode}
-            onAchievementUnlocked={awardAchievementCoins}
-            aquaCoins={aquaCoins}
-          />
+              {/* Today's Progress Stats */}
+              <Card className="p-8 border-0 shadow-2xl backdrop-blur-sm transition-all duration-700 rounded-3xl bg-white/5 backdrop-blur-sm text-white border border-white/10">
+                <div className="flex items-center gap-3 mb-6">
+                  <TrendingUp className="w-7 h-7 text-blue-400" />
+                  <h3 className="font-bold text-2xl text-white">Today's Progress</h3>
+                </div>
+                <div className="space-y-6">
+                  <div className="flex justify-between text-lg">
+                    <span className="text-gray-300">Current Intake</span>
+                    <span className="font-bold text-blue-400">{currentIntake}ml</span>
+                  </div>
+                  <div className="flex justify-between text-lg">
+                    <span className="text-gray-300">Daily Goal</span>
+                    <span className="font-bold text-white">{dailyGoal}ml</span>
+                  </div>
+                  <div className="flex justify-between text-lg">
+                    <span className="text-gray-300">Remaining</span>
+                    <span className="font-bold text-orange-400">
+                      {Math.max(0, dailyGoal - currentIntake)}ml
+                    </span>
+                  </div>
+                  <Progress value={progressPercentage} className="h-4 rounded-full" />
+                  <p className="text-sm text-center font-medium text-gray-400">
+                    {progressPercentage.toFixed(0)}% complete
+                  </p>
+                </div>
+              </Card>
 
-          {/* Recent Drinks History */}
-          <DrinkHistory drinks={drinks.slice(0, 5)} isDarkMode={isDarkMode} />
+              {/* Recent Drinks History */}
+              <DrinkHistory drinks={drinks.slice(0, 5)} isDarkMode={true} />
+            </TabsContent>
+
+            <TabsContent value="achievements" className="space-y-10">
+              <Achievements 
+                currentIntake={currentIntake} 
+                dailyGoal={dailyGoal} 
+                streak={streak} 
+                isDarkMode={true}
+                onAchievementUnlocked={awardAchievementCoins}
+                aquaCoins={aquaCoins}
+                hasEliteBadges={hasEliteBadges}
+              />
+            </TabsContent>
+
+            {unlockedFeatures.includes('analytics-pro') && (
+              <TabsContent value="analytics" className="space-y-10">
+                <Card className="p-8 border-0 shadow-2xl backdrop-blur-sm transition-all duration-700 rounded-3xl bg-white/5 backdrop-blur-sm text-white border border-white/10">
+                  <div className="flex items-center gap-3 mb-6">
+                    <BarChart3 className="w-7 h-7 text-blue-400" />
+                    <h3 className="font-bold text-2xl text-white">Hydration Analytics</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                      <h4 className="font-semibold text-lg mb-4 text-blue-300">Weekly Average</h4>
+                      <p className="text-3xl font-bold text-white">{Math.round(currentIntake * 0.85)}ml</p>
+                      <p className="text-gray-400 text-sm mt-2">Based on your daily intake patterns</p>
+                    </div>
+                    <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                      <h4 className="font-semibold text-lg mb-4 text-green-300">Goal Achievement Rate</h4>
+                      <p className="text-3xl font-bold text-white">78%</p>
+                      <p className="text-gray-400 text-sm mt-2">Days you've reached your goal this month</p>
+                    </div>
+                    <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                      <h4 className="font-semibold text-lg mb-4 text-purple-300">Best Streak</h4>
+                      <p className="text-3xl font-bold text-white">{Math.max(streak, 7)} days</p>
+                      <p className="text-gray-400 text-sm mt-2">Your longest hydration streak</p>
+                    </div>
+                    <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                      <h4 className="font-semibold text-lg mb-4 text-orange-300">Peak Hours</h4>
+                      <p className="text-3xl font-bold text-white">2-4 PM</p>
+                      <p className="text-gray-400 text-sm mt-2">When you hydrate the most</p>
+                    </div>
+                  </div>
+                </Card>
+              </TabsContent>
+            )}
+          </Tabs>
         </div>
 
         {/* Goal Setting Modal */}
@@ -390,6 +420,9 @@ const Index = () => {
                 setCurrentTheme(themeName);
               } else if (itemId.includes('feature') || itemId.includes('premium') || itemId.includes('custom') || itemId.includes('analytics')) {
                 setUnlockedFeatures(prev => [...prev, itemId]);
+                if (itemId === 'analytics-pro') {
+                  setActiveTab('analytics');
+                }
               }
               setAquaCoins(prev => prev - cost);
               toast({

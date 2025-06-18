@@ -1,261 +1,248 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Trophy, Flame, Star, Award, Target, Zap, Heart, Coffee, Droplets, Crown, Coins, Calendar, Sparkles, Medal, Gem } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Trophy, Star, Zap, Crown, Diamond, Gem } from 'lucide-react';
+
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  unlocked: boolean;
+  progress: number;
+  target: number;
+  coins: number;
+  isElite?: boolean;
+}
 
 interface AchievementsProps {
   currentIntake: number;
   dailyGoal: number;
   streak: number;
-  isDarkMode?: boolean;
-  onAchievementUnlocked?: (coins: number) => void;
+  isDarkMode: boolean;
+  onAchievementUnlocked: (coins: number) => void;
   aquaCoins: number;
+  hasEliteBadges?: boolean;
 }
 
-const Achievements = ({ currentIntake, dailyGoal, streak, isDarkMode = false, onAchievementUnlocked, aquaCoins }: AchievementsProps) => {
-  const [previouslyUnlocked, setPreviouslyUnlocked] = useState<string[]>([]);
+const Achievements = ({ 
+  currentIntake, 
+  dailyGoal, 
+  streak, 
+  isDarkMode, 
+  onAchievementUnlocked, 
+  aquaCoins,
+  hasEliteBadges = false 
+}: AchievementsProps) => {
+  const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
 
-  const achievements = [
+  const achievements: Achievement[] = [
     {
       id: 'first-drop',
-      title: 'First Drop',
-      description: 'Log your first drink',
-      icon: Droplets,
+      name: hasEliteBadges ? 'Diamond Drop' : 'First Drop',
+      description: 'Log your first water intake',
+      icon: hasEliteBadges ? <Diamond className="w-6 h-6" /> : <Zap className="w-6 h-6" />,
       unlocked: currentIntake > 0,
-      color: 'text-blue-500 bg-blue-100',
-      coins: 5,
+      progress: currentIntake > 0 ? 1 : 0,
+      target: 1,
+      coins: hasEliteBadges ? 15 : 5,
+      isElite: hasEliteBadges,
     },
     {
-      id: 'early-bird',
-      title: 'Early Bird',
-      description: 'Drink 200ml before 10 AM',
-      icon: Star,
-      unlocked: currentIntake >= 200,
-      color: 'text-yellow-500 bg-yellow-100',
-      coins: 8,
-    },
-    {
-      id: 'quarter-goal',
-      title: 'Getting Started',
-      description: 'Reach 25% of daily goal',
-      icon: Zap,
-      unlocked: currentIntake >= dailyGoal * 0.25,
-      color: 'text-green-500 bg-green-100',
-      coins: 10,
-    },
-    {
-      id: 'half-goal',
-      title: 'Halfway Hero',
-      description: 'Reach 50% of daily goal',
-      icon: Award,
+      id: 'half-way',
+      name: hasEliteBadges ? 'Platinum Progress' : 'Half Way There',
+      description: 'Reach 50% of your daily goal',
+      icon: hasEliteBadges ? <Crown className="w-6 h-6" /> : <Star className="w-6 h-6" />,
       unlocked: currentIntake >= dailyGoal * 0.5,
-      color: 'text-orange-500 bg-orange-100',
-      coins: 15,
-    },
-    {
-      id: 'caffeine-lover',
-      title: 'Caffeine Lover',
-      description: 'Log 3+ coffee drinks',
-      icon: Coffee,
-      unlocked: currentIntake >= 750,
-      color: 'text-amber-600 bg-amber-100',
-      coins: 12,
-    },
-    {
-      id: 'hydration-warrior',
-      title: 'Hydration Warrior',
-      description: 'Reach 75% of daily goal',
-      icon: Heart,
-      unlocked: currentIntake >= dailyGoal * 0.75,
-      color: 'text-red-500 bg-red-100',
-      coins: 20,
+      progress: Math.min(currentIntake, dailyGoal * 0.5),
+      target: dailyGoal * 0.5,
+      coins: hasEliteBadges ? 25 : 10,
+      isElite: hasEliteBadges,
     },
     {
       id: 'daily-goal',
-      title: 'Goal Crusher',
-      description: 'Complete daily goal',
-      icon: Target,
+      name: hasEliteBadges ? 'Elite Hydrator' : 'Daily Champion',
+      description: 'Complete your daily hydration goal',
+      icon: hasEliteBadges ? <Gem className="w-6 h-6" /> : <Trophy className="w-6 h-6" />,
       unlocked: currentIntake >= dailyGoal,
-      color: 'text-purple-500 bg-purple-100',
-      coins: 25,
-    },
-    {
-      id: 'overachiever',
-      title: 'Overachiever',
-      description: 'Exceed goal by 25%',
-      icon: Crown,
-      unlocked: currentIntake >= dailyGoal * 1.25,
-      color: 'text-indigo-500 bg-indigo-100',
-      coins: 30,
+      progress: Math.min(currentIntake, dailyGoal),
+      target: dailyGoal,
+      coins: hasEliteBadges ? 50 : 20,
+      isElite: hasEliteBadges,
     },
     {
       id: 'streak-3',
-      title: 'Consistency King',
-      description: '3+ day streak',
-      icon: Flame,
+      name: hasEliteBadges ? 'Diamond Streak' : 'Consistency',
+      description: 'Maintain a 3-day hydration streak',
+      icon: hasEliteBadges ? <Diamond className="w-6 h-6" /> : <Zap className="w-6 h-6" />,
       unlocked: streak >= 3,
-      color: 'text-red-500 bg-red-100',
-      coins: 20,
+      progress: Math.min(streak, 3),
+      target: 3,
+      coins: hasEliteBadges ? 40 : 15,
+      isElite: hasEliteBadges,
     },
     {
-      id: 'streak-7',
-      title: 'Week Warrior',
-      description: '7+ day streak',
-      icon: Trophy,
-      unlocked: streak >= 7,
-      color: 'text-yellow-600 bg-yellow-100',
-      coins: 50,
+      id: 'over-achiever',
+      name: hasEliteBadges ? 'Legendary Hydrator' : 'Over Achiever',
+      description: 'Drink 150% of your daily goal',
+      icon: hasEliteBadges ? <Crown className="w-6 h-6" /> : <Trophy className="w-6 h-6" />,
+      unlocked: currentIntake >= dailyGoal * 1.5,
+      progress: Math.min(currentIntake, dailyGoal * 1.5),
+      target: dailyGoal * 1.5,
+      coins: hasEliteBadges ? 75 : 30,
+      isElite: hasEliteBadges,
     },
     {
       id: 'coin-collector',
-      title: 'Coin Collector',
-      description: 'Earn 100+ Aqua Coins',
-      icon: Coins,
+      name: hasEliteBadges ? 'Elite Collector' : 'Coin Collector',
+      description: 'Accumulate 100 Aqua Coins',
+      icon: hasEliteBadges ? <Gem className="w-6 h-6" /> : <Star className="w-6 h-6" />,
       unlocked: aquaCoins >= 100,
-      color: 'text-yellow-500 bg-yellow-100',
-      coins: 25,
-    },
-    {
-      id: 'weekend-warrior',
-      title: 'Weekend Warrior',
-      description: 'Stay hydrated on weekends',
-      icon: Calendar,
-      unlocked: streak >= 2,
-      color: 'text-blue-600 bg-blue-100',
-      coins: 15,
-    },
-    {
-      id: 'premium-user',
-      title: 'Premium User',
-      description: 'Unlock your first theme',
-      icon: Sparkles,
-      unlocked: aquaCoins >= 50,
-      color: 'text-pink-500 bg-pink-100',
-      coins: 10,
-    },
-    {
-      id: 'perfectionist',
-      title: 'Perfectionist',
-      description: 'Hit exact daily goal',
-      icon: Medal,
-      unlocked: currentIntake === dailyGoal && dailyGoal > 0,
-      color: 'text-emerald-500 bg-emerald-100',
-      coins: 35,
-    },
-    {
-      id: 'luxury-lifestyle',
-      title: 'Luxury Lifestyle',
-      description: 'Reach 200+ Aqua Coins',
-      icon: Gem,
-      unlocked: aquaCoins >= 200,
-      color: 'text-purple-600 bg-purple-100',
-      coins: 50,
+      progress: Math.min(aquaCoins, 100),
+      target: 100,
+      coins: hasEliteBadges ? 60 : 25,
+      isElite: hasEliteBadges,
     },
   ];
 
   useEffect(() => {
-    const currentlyUnlocked = achievements.filter(a => a.unlocked).map(a => a.id);
-    const newlyUnlocked = currentlyUnlocked.filter(id => !previouslyUnlocked.includes(id));
-    
-    if (newlyUnlocked.length > 0 && onAchievementUnlocked) {
-      newlyUnlocked.forEach(id => {
-        const achievement = achievements.find(a => a.id === id);
-        if (achievement) {
-          onAchievementUnlocked(achievement.coins);
-        }
-      });
+    const savedAchievements = localStorage.getItem('unlockedAchievements');
+    if (savedAchievements) {
+      setUnlockedAchievements(JSON.parse(savedAchievements));
     }
-    
-    setPreviouslyUnlocked(currentlyUnlocked);
-  }, [achievements.map(a => a.unlocked).join(',')]);
+  }, []);
 
-  const unlockedCount = achievements.filter(a => a.unlocked).length;
+  useEffect(() => {
+    achievements.forEach(achievement => {
+      if (achievement.unlocked && !unlockedAchievements.includes(achievement.id)) {
+        setUnlockedAchievements(prev => {
+          const newUnlocked = [...prev, achievement.id];
+          localStorage.setItem('unlockedAchievements', JSON.stringify(newUnlocked));
+          onAchievementUnlocked(achievement.coins);
+          return newUnlocked;
+        });
+      }
+    });
+  }, [currentIntake, dailyGoal, streak, aquaCoins, achievements, unlockedAchievements, onAchievementUnlocked]);
+
+  const getProgressColor = (achievement: Achievement) => {
+    if (achievement.isElite) {
+      return achievement.unlocked ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gradient-to-r from-gray-600 to-gray-700';
+    }
+    return achievement.unlocked ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gradient-to-r from-gray-400 to-gray-500';
+  };
+
+  const getBadgeVariant = (achievement: Achievement) => {
+    if (achievement.isElite) {
+      return achievement.unlocked ? 'default' : 'secondary';
+    }
+    return achievement.unlocked ? 'default' : 'secondary';
+  };
+
+  const getBadgeStyle = (achievement: Achievement) => {
+    if (achievement.isElite && achievement.unlocked) {
+      return 'bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 shadow-lg';
+    }
+    return '';
+  };
 
   return (
-    <Card className={`p-8 border-0 shadow-2xl backdrop-blur-md transition-all duration-700 ${
-      isDarkMode 
-        ? 'bg-slate-800/80 backdrop-blur-sm border border-white/10' 
-        : 'bg-white/90 backdrop-blur-sm border border-white/50'
-    }`}>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${isDarkMode ? 'bg-yellow-500/20' : 'bg-yellow-100'}`}>
-            <Trophy className="w-6 h-6 text-yellow-500" />
-          </div>
-          <div>
-            <h3 className={`font-bold text-xl ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Achievements</h3>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Unlock rewards & earn Aqua Coins</p>
-          </div>
-        </div>
-        <div className={`text-sm font-bold px-3 py-1 rounded-full ${
-          isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-600'
-        }`}>
-          {unlockedCount}/{achievements.length}
-        </div>
+    <Card className={`p-8 border-0 shadow-2xl backdrop-blur-sm transition-all duration-700 rounded-3xl bg-white/5 backdrop-blur-sm text-white border border-white/10`}>
+      <div className="flex items-center gap-3 mb-8">
+        {hasEliteBadges ? (
+          <Crown className="w-8 h-8 text-purple-400" />
+        ) : (
+          <Trophy className="w-8 h-8 text-yellow-500" />
+        )}
+        <h3 className="font-bold text-3xl text-white">
+          {hasEliteBadges ? 'Elite Achievements' : 'Achievements'}
+        </h3>
+        {hasEliteBadges && (
+          <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 px-3 py-1">
+            Premium
+          </Badge>
+        )}
       </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {achievements.map((achievement) => {
-          const Icon = achievement.icon;
-          return (
-            <div
-              key={achievement.id}
-              className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
-                achievement.unlocked
-                  ? isDarkMode 
-                    ? 'border-transparent bg-gradient-to-br from-slate-700 to-slate-600 shadow-lg hover:shadow-xl transform hover:scale-105'
-                    : 'border-transparent bg-gradient-to-br from-white to-gray-50 shadow-lg hover:shadow-xl transform hover:scale-105'
-                  : isDarkMode
-                    ? 'border-dashed border-slate-600 bg-slate-700/30'
-                    : 'border-dashed border-gray-300 bg-gray-50'
-              }`}
-            >
-              <div className={`p-3 rounded-xl w-fit mb-3 transition-all duration-300 ${
-                achievement.unlocked ? achievement.color : isDarkMode ? 'bg-slate-600 text-gray-500' : 'bg-gray-200 text-gray-400'
-              }`}>
-                <Icon className="w-5 h-5" />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {achievements.map((achievement) => (
+          <div
+            key={achievement.id}
+            className={`p-6 rounded-2xl border transition-all duration-500 hover:scale-105 ${
+              achievement.unlocked
+                ? achievement.isElite
+                  ? 'bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-purple-400/50 shadow-lg shadow-purple-500/25'
+                  : 'bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border-blue-400/50 shadow-lg shadow-blue-500/25'
+                : 'bg-white/5 border-gray-600/30'
+            }`}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-3 rounded-xl ${
+                  achievement.unlocked 
+                    ? achievement.isElite
+                      ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-purple-300'
+                      : 'bg-gradient-to-r from-blue-500/30 to-cyan-500/30 text-blue-300'
+                    : 'bg-gray-600/20 text-gray-500'
+                }`}>
+                  {achievement.icon}
+                </div>
+                <div>
+                  <h4 className={`font-bold text-lg ${
+                    achievement.unlocked ? 'text-white' : 'text-gray-400'
+                  }`}>
+                    {achievement.name}
+                  </h4>
+                  <p className={`text-sm ${
+                    achievement.unlocked ? 'text-gray-300' : 'text-gray-500'
+                  }`}>
+                    {achievement.description}
+                  </p>
+                </div>
               </div>
-              <h4 className={`text-sm font-bold mb-2 ${
-                achievement.unlocked 
-                  ? isDarkMode ? 'text-white' : 'text-gray-800'
-                  : isDarkMode ? 'text-gray-500' : 'text-gray-400'
-              }`}>
-                {achievement.title}
-              </h4>
-              <p className={`text-xs mb-3 ${
-                achievement.unlocked 
-                  ? isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  : isDarkMode ? 'text-gray-500' : 'text-gray-400'
-              }`}>
-                {achievement.description}
-              </p>
-              {achievement.unlocked ? (
-                <div className="flex items-center justify-between">
-                  <div className="text-xs font-medium text-green-600 flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    Unlocked!
-                  </div>
-                  <div className="flex items-center gap-1 text-xs font-bold text-yellow-600">
-                    <Coins className="w-3 h-3" />
-                    {achievement.coins}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 text-xs font-medium text-yellow-600">
-                  <Coins className="w-3 h-3" />
-                  {achievement.coins}
-                </div>
-              )}
+              <Badge 
+                variant={getBadgeVariant(achievement)} 
+                className={`${getBadgeStyle(achievement)} font-semibold`}
+              >
+                +{achievement.coins}
+              </Badge>
             </div>
-          );
-        })}
+            
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Progress</span>
+                <span className={achievement.unlocked ? 'text-white font-bold' : 'text-gray-400'}>
+                  {Math.min(achievement.progress, achievement.target).toFixed(0)} / {achievement.target}
+                </span>
+              </div>
+              <div className="w-full bg-gray-700/50 rounded-full h-3 overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-1000 ${getProgressColor(achievement)} ${
+                    achievement.isElite && achievement.unlocked ? 'shadow-lg shadow-purple-500/50' : ''
+                  }`}
+                  style={{
+                    width: `${Math.min((achievement.progress / achievement.target) * 100, 100)}%`,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-
-      {unlockedCount < achievements.length && (
-        <div className="mt-6 text-center">
-          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-            Keep hydrating to unlock more achievements & earn Aqua Coins! 🎯
-          </p>
+      
+      {hasEliteBadges && (
+        <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-400/30">
+          <div className="flex items-center gap-3 mb-3">
+            <Crown className="w-6 h-6 text-purple-400" />
+            <h4 className="font-bold text-lg text-purple-300">Elite Badge Benefits</h4>
+          </div>
+          <ul className="space-y-2 text-gray-300 text-sm">
+            <li>• Higher coin rewards for achievements</li>
+            <li>• Exclusive diamond and platinum badge designs</li>
+            <li>• Special achievement names and descriptions</li>
+            <li>• Premium visual effects and animations</li>
+          </ul>
         </div>
       )}
     </Card>
