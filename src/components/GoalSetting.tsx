@@ -10,9 +10,10 @@ interface GoalSettingProps {
   currentGoal: number;
   onGoalSet: (goal: number) => void;
   onClose: () => void;
+  isDarkMode?: boolean;
 }
 
-const GoalSetting = ({ currentGoal, onGoalSet, onClose }: GoalSettingProps) => {
+const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: GoalSettingProps) => {
   const [weight, setWeight] = useState('');
   const [activityLevel, setActivityLevel] = useState<'low' | 'moderate' | 'high'>('moderate');
   const [customGoal, setCustomGoal] = useState(currentGoal.toString());
@@ -42,35 +43,39 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose }: GoalSettingProps) => {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <Card className={`w-full max-w-md rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto border-2 transition-all duration-500 ${
+        isDarkMode 
+          ? 'bg-slate-800/95 backdrop-blur-md border-white/20 text-white' 
+          : 'bg-white/95 backdrop-blur-md border-white/50'
+      }`}>
+        <div className="p-8">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-xl">
-                <Target className="w-6 h-6 text-blue-600" />
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-2xl ${isDarkMode ? 'bg-blue-600/20' : 'bg-blue-100'}`}>
+                <Target className={`w-8 h-8 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-800">Set Your Goal</h2>
-                <p className="text-sm text-gray-500">Personalize your hydration target</p>
+                <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Set Your Goal</h2>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Personalize your hydration target</p>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="w-5 h-5" />
+            <Button variant="ghost" size="sm" onClick={onClose} className={isDarkMode ? 'text-gray-300 hover:bg-white/10' : ''}>
+              <X className="w-6 h-6" />
             </Button>
           </div>
 
           {/* Recommended Goal Calculator */}
-          <div className="mb-6 p-4 bg-blue-50 rounded-xl">
-            <div className="flex items-center gap-2 mb-3">
-              <User className="w-4 h-4 text-blue-600" />
-              <span className="font-medium text-blue-800">Get Recommendation</span>
+          <div className={`mb-8 p-6 rounded-2xl ${isDarkMode ? 'bg-blue-600/10 border border-blue-400/20' : 'bg-blue-50 border border-blue-200'}`}>
+            <div className="flex items-center gap-3 mb-4">
+              <User className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+              <span className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-blue-800'}`}>Get Recommendation</span>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <Label htmlFor="weight" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="weight" className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                   Weight (kg)
                 </Label>
                 <Input
@@ -79,15 +84,15 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose }: GoalSettingProps) => {
                   placeholder="e.g., 70"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  className="mt-1"
+                  className={`mt-2 ${isDarkMode ? 'bg-slate-700/50 border-gray-600 text-white' : ''}`}
                 />
               </div>
 
               <div>
-                <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-3 block`}>
                   Activity Level
                 </Label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   {[
                     { key: 'low', label: 'Low', icon: '🚶' },
                     { key: 'moderate', label: 'Moderate', icon: '🚴' },
@@ -98,48 +103,60 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose }: GoalSettingProps) => {
                       variant={activityLevel === level.key ? "default" : "outline"}
                       size="sm"
                       onClick={() => setActivityLevel(level.key as any)}
-                      className="flex flex-col gap-1 h-auto py-2"
+                      className={`flex flex-col gap-2 h-auto py-3 ${
+                        activityLevel === level.key 
+                          ? 'bg-blue-600 text-white shadow-lg' 
+                          : isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-white/10' : ''
+                      }`}
                     >
-                      <span className="text-lg">{level.icon}</span>
-                      <span className="text-xs">{level.label}</span>
+                      <span className="text-xl">{level.icon}</span>
+                      <span className="text-xs font-medium">{level.label}</span>
                     </Button>
                   ))}
                 </div>
               </div>
 
               {weight && (
-                <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-blue-200">
-                  <span className="text-sm font-medium text-gray-700">Recommended:</span>
-                  <span className="text-lg font-bold text-blue-600">{recommendedGoal}ml</span>
+                <div className={`flex items-center justify-between p-4 rounded-xl border-2 ${
+                  isDarkMode 
+                    ? 'bg-slate-700/50 border-blue-400' 
+                    : 'bg-white border-blue-200'
+                }`}>
+                  <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>Recommended:</span>
+                  <span className={`text-xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>{recommendedGoal}ml</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* Preset Goals */}
-          <div className="mb-6">
-            <Label className="text-sm font-medium text-gray-700 mb-3 block">
+          <div className="mb-8">
+            <Label className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-4 block`}>
               Quick Presets
             </Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               {presetGoals.map((preset) => (
                 <Button
                   key={preset.amount}
                   variant="outline"
                   onClick={() => setCustomGoal(preset.amount.toString())}
-                  className="flex flex-col gap-2 h-auto py-4 hover:bg-blue-50 hover:border-blue-300 transition-all"
+                  className={`flex flex-col gap-3 h-auto py-5 transition-all duration-300 ${
+                    isDarkMode 
+                      ? 'border-gray-600 text-gray-300 hover:bg-blue-600/20 hover:border-blue-400' 
+                      : 'hover:bg-blue-50 hover:border-blue-300'
+                  }`}
                 >
-                  <span className="text-2xl">{preset.icon}</span>
+                  <span className="text-3xl">{preset.icon}</span>
                   <span className="font-bold text-lg">{preset.label}</span>
-                  <span className="text-xs text-gray-500">{preset.description}</span>
+                  <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{preset.description}</span>
                 </Button>
               ))}
             </div>
           </div>
 
           {/* Custom Goal Input */}
-          <div className="mb-6">
-            <Label htmlFor="customGoal" className="text-sm font-medium text-gray-700 mb-2 block">
+          <div className="mb-8">
+            <Label htmlFor="customGoal" className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-3 block`}>
               Custom Goal (ml)
             </Label>
             <Input
@@ -150,17 +167,22 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose }: GoalSettingProps) => {
               placeholder="Enter custom amount"
               min="500"
               max="5000"
+              className={`text-lg ${isDarkMode ? 'bg-slate-700/50 border-gray-600 text-white' : ''}`}
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1">
+          <div className="flex gap-4">
+            <Button 
+              variant="outline" 
+              onClick={onClose} 
+              className={`flex-1 ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-white/10' : ''}`}
+            >
               Cancel
             </Button>
             <Button
               onClick={() => onGoalSet(parseInt(customGoal) || 2000)}
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
               disabled={!customGoal || parseInt(customGoal) < 500}
             >
               Set Goal
@@ -171,7 +193,11 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose }: GoalSettingProps) => {
             <Button
               variant="ghost"
               onClick={() => onGoalSet(recommendedGoal)}
-              className="w-full mt-2 text-blue-600 hover:bg-blue-50"
+              className={`w-full mt-4 font-semibold ${
+                isDarkMode 
+                  ? 'text-blue-400 hover:bg-blue-600/20' 
+                  : 'text-blue-600 hover:bg-blue-50'
+              }`}
             >
               Use Recommended ({recommendedGoal}ml)
             </Button>
