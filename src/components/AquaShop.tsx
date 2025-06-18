@@ -10,6 +10,7 @@ interface AquaShopProps {
   currentTheme: string;
   unlockedFeatures: string[];
   onPurchase: (itemId: string, cost: number) => void;
+  onThemeSwitch: (themeId: string) => void;
   onClose: () => void;
   isDarkMode?: boolean;
 }
@@ -20,6 +21,7 @@ const AquaShop = ({
   currentTheme, 
   unlockedFeatures = [], 
   onPurchase, 
+  onThemeSwitch,
   onClose, 
   isDarkMode = false 
 }: AquaShopProps) => {
@@ -90,6 +92,11 @@ const AquaShop = ({
     if (aquaCoins >= item.cost && !item.unlocked) {
       onPurchase(item.id, item.cost);
     }
+  };
+
+  const handleThemeSwitch = (themeId: string) => {
+    const themeName = themeId.replace('theme-', '');
+    onThemeSwitch(themeName);
   };
 
   return (
@@ -195,10 +202,20 @@ const AquaShop = ({
                       Active
                     </div>
                   ) : item.unlocked ? (
-                    <div className="flex items-center gap-2 text-emerald-500 font-semibold">
-                      <Sparkles className="w-5 h-5" />
-                      Owned
-                    </div>
+                    item.type === 'theme' ? (
+                      <Button
+                        onClick={() => handleThemeSwitch(item.id)}
+                        size="sm"
+                        className="rounded-2xl px-6 py-2 font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg transition-all duration-300"
+                      >
+                        Activate
+                      </Button>
+                    ) : (
+                      <div className="flex items-center gap-2 text-emerald-500 font-semibold">
+                        <Sparkles className="w-5 h-5" />
+                        Owned
+                      </div>
+                    )
                   ) : (
                     <Button
                       onClick={() => handlePurchase(item)}

@@ -185,21 +185,25 @@ const Index = () => {
   };
 
   const getHeaderStyles = () => {
-    const baseClasses = "text-white p-8 rounded-b-[3rem] shadow-2xl backdrop-blur-xl transition-all duration-1000 border-b";
+    const baseClasses = "text-white p-8 rounded-b-[3rem] shadow-2xl backdrop-blur-sm transition-all duration-1000 border-b";
     
     switch (currentTheme) {
       case 'ocean':
-        return `${baseClasses} bg-gradient-to-r from-blue-600/95 to-cyan-600/95 border-blue-300/20`;
+        return `${baseClasses} bg-gradient-to-r from-blue-600/85 to-cyan-600/85 border-blue-300/30`;
       case 'sunset':
-        return `${baseClasses} bg-gradient-to-r from-orange-600/95 to-pink-600/95 border-orange-300/20`;
+        return `${baseClasses} bg-gradient-to-r from-orange-600/85 to-pink-600/85 border-orange-300/30`;
       case 'forest':
-        return `${baseClasses} bg-gradient-to-r from-green-600/95 to-emerald-600/95 border-green-300/20`;
+        return `${baseClasses} bg-gradient-to-r from-green-600/85 to-emerald-600/85 border-green-300/30`;
       default:
         return `${baseClasses} ${isDarkMode 
-          ? 'bg-gradient-to-r from-blue-800/95 to-cyan-700/95 border-white/10' 
-          : 'bg-gradient-to-r from-blue-500/95 to-cyan-500/95 border-white/20'
+          ? 'bg-gradient-to-r from-blue-800/85 to-cyan-700/85 border-white/20' 
+          : 'bg-gradient-to-r from-blue-500/85 to-cyan-500/85 border-white/30'
         }`;
     }
+  };
+
+  const handleThemeSwitch = (themeName: string) => {
+    setCurrentTheme(themeName);
   };
 
   return (
@@ -210,7 +214,7 @@ const Index = () => {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ 
             backgroundImage: `url(${getThemeBackgroundImage()})`,
-            filter: isDarkMode ? 'brightness(0.3) contrast(1.2)' : 'brightness(0.7) contrast(1.1)'
+            filter: isDarkMode ? 'brightness(0.4) contrast(1.3)' : 'brightness(0.8) contrast(1.2)'
           }}
         />
       )}
@@ -310,10 +314,10 @@ const Index = () => {
           <QuickAddButtons onAddWater={addWater} isDarkMode={isDarkMode} />
 
           {/* Today's Progress Stats */}
-          <Card className={`p-8 border-0 shadow-2xl backdrop-blur-xl transition-all duration-700 rounded-3xl ${
+          <Card className={`p-8 border-0 shadow-2xl backdrop-blur-sm transition-all duration-700 rounded-3xl ${
             isDarkMode 
-              ? 'bg-slate-800/90 backdrop-blur-sm text-white border border-white/10' 
-              : 'bg-white/90 backdrop-blur-sm border border-white/50'
+              ? 'bg-slate-800/80 backdrop-blur-sm text-white border border-white/20' 
+              : 'bg-white/80 backdrop-blur-sm border border-white/40'
           }`}>
             <div className="flex items-center gap-3 mb-6">
               <TrendingUp className="w-7 h-7 text-blue-500" />
@@ -394,6 +398,7 @@ const Index = () => {
                 duration: 3000,
               });
             }}
+            onThemeSwitch={handleThemeSwitch}
             onClose={() => setShowAquaShop(false)}
             isDarkMode={isDarkMode}
           />
