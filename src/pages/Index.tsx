@@ -276,48 +276,170 @@ const Index = () => {
 
   const getThemeBackgroundImage = () => {
     switch (currentTheme) {
+      // Nature themes
       case 'ocean':
-        return 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=3840&q=80';
       case 'sunset':
-        return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=3840&q=80';
       case 'forest':
-        return 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2000&q=80';
-      case 'night':
-        return 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=3840&q=80';
       case 'aurora':
-        return 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=3840&q=80';
       case 'desert':
-        return 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=3840&q=80';
       case 'cherry-blossom':
-        return 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=3840&q=80';
       case 'mountain-mist':
-        return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=3840&q=80';
       case 'tropical':
-        return 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?auto=format&fit=crop&w=2000&q=80';
-      case 'lavender-fields':
-        return 'https://images.unsplash.com/photo-1499002238440-d264edd596ec?auto=format&fit=crop&w=2000&q=80';
-      case 'golden-wheat':
-        return 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?auto=format&fit=crop&w=3840&q=80';
+      
+      // Cityscape themes (night lights, no people)
       case 'tokyo-skyline':
-        return 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=3840&q=80';
       case 'manhattan':
-        return 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=3840&q=80';
       case 'dubai-sunset':
-        return 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=3840&q=80';
       case 'london-fog':
-        return 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=3840&q=80';
       case 'singapore-lights':
-        return 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=3840&q=80';
+      case 'paris-twilight':
+        return 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?auto=format&fit=crop&w=3840&q=80';
+      case 'hong-kong-neon':
+        return 'https://images.unsplash.com/photo-1536431311719-398b6704d4cc?auto=format&fit=crop&w=3840&q=80';
+      case 'shanghai-nights':
+        return 'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?auto=format&fit=crop&w=3840&q=80';
+      
+      // Animal themes (cute animals, no people)
       case 'puppy-paradise':
-        return 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=3840&q=80';
       case 'kitten-cuddles':
-        return 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=3840&q=80';
       case 'penguin-play':
-        return 'https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?auto=format&fit=crop&w=3840&q=80';
       case 'baby-elephants':
-        return 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=3840&q=80';
       case 'koala-dreams':
-        return 'https://images.unsplash.com/photo-1459262838948-3e2de6c1ec80?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1459262838948-3e2de6c1ec80?auto=format&fit=crop&w=3840&q=80';
+      case 'panda-fun':
+        return 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=3840&q=80';
+      case 'dolphin-dance':
+        return 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=3840&q=80';
+      
+      // Ocean themes
+      case 'coral-reef':
+        return 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=3840&q=80';
+      case 'deep-blue':
+        return 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=3840&q=80';
+      case 'tropical-lagoon':
+        return 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?auto=format&fit=crop&w=3840&q=80';
+      case 'whale-sanctuary':
+        return 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=3840&q=80';
+      case 'underwater-garden':
+        return 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=3840&q=80';
+      case 'pearl-caves':
+        return 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=3840&q=80';
+      case 'mermaid-palace':
+        return 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=3840&q=80';
+      
+      // Mountain themes
+      case 'alpine-peak':
+        return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=3840&q=80';
+      case 'himalayan-sunrise':
+        return 'https://images.unsplash.com/photo-1464822759844-d150baef493e?auto=format&fit=crop&w=3840&q=80';
+      case 'rocky-mountains':
+        return 'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?auto=format&fit=crop&w=3840&q=80';
+      case 'swiss-alps':
+        return 'https://images.unsplash.com/photo-1551524164-687a55dd1126?auto=format&fit=crop&w=3840&q=80';
+      case 'patagonia-peaks':
+        return 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=3840&q=80';
+      case 'mountain-lake':
+        return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=3840&q=80';
+      case 'glacier-valley':
+        return 'https://images.unsplash.com/photo-1464822759844-d150baef493e?auto=format&fit=crop&w=3840&q=80';
+      
+      // Garden themes
+      case 'zen-garden':
+        return 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=3840&q=80';
+      case 'rose-garden':
+        return 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=3840&q=80';
+      case 'butterfly-garden':
+        return 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=3840&q=80';
+      case 'english-garden':
+        return 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=3840&q=80';
+      case 'tropical-garden':
+        return 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=3840&q=80';
+      case 'tulip-fields':
+        return 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=3840&q=80';
+      case 'lavender-garden':
+        return 'https://images.unsplash.com/photo-1499002238440-d264edd596ec?auto=format&fit=crop&w=3840&q=80';
+      
+      // Space themes
+      case 'milky-way':
+        return 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=3840&q=80';
+      case 'nebula-dreams':
+        return 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?auto=format&fit=crop&w=3840&q=80';
+      case 'starry-night':
+        return 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=3840&q=80';
+      case 'northern-lights':
+        return 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=3840&q=80';
+      case 'cosmic-voyage':
+        return 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?auto=format&fit=crop&w=3840&q=80';
+      case 'lunar-eclipse':
+        return 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=3840&q=80';
+      case 'galaxy-spiral':
+        return 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?auto=format&fit=crop&w=3840&q=80';
+      
+      // Cat themes
+      case 'persian-cats':
+        return 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=3840&q=80';
+      case 'siamese-play':
+        return 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?auto=format&fit=crop&w=3840&q=80';
+      case 'maine-coon':
+        return 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?auto=format&fit=crop&w=3840&q=80';
+      case 'kitten-basket':
+        return 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=3840&q=80';
+      case 'ragdoll-cats':
+        return 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?auto=format&fit=crop&w=3840&q=80';
+      case 'bengal-cats':
+        return 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?auto=format&fit=crop&w=3840&q=80';
+      case 'scottish-fold':
+        return 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=3840&q=80';
+      
+      // Dog themes
+      case 'golden-retrievers':
+        return 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=3840&q=80';
+      case 'husky-pack':
+        return 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?auto=format&fit=crop&w=3840&q=80';
+      case 'labrador-fun':
+        return 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=3840&q=80';
+      case 'beagle-adventure':
+        return 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?auto=format&fit=crop&w=3840&q=80';
+      case 'border-collie':
+        return 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?auto=format&fit=crop&w=3840&q=80';
+      case 'corgi-parade':
+        return 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=3840&q=80';
+      case 'german-shepherd':
+        return 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?auto=format&fit=crop&w=3840&q=80';
+      
+      // Aquatic themes
+      case 'tropical-fish':
+        return 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=3840&q=80';
+      case 'seahorse-garden':
+        return 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=3840&q=80';
+      case 'jellyfish-bloom':
+        return 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=3840&q=80';
+      case 'sea-turtles':
+        return 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=3840&q=80';
+      case 'manta-rays':
+        return 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=3840&q=80';
+      case 'clownfish-reef':
+        return 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=3840&q=80';
+      case 'whale-sharks':
+        return 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=3840&q=80';
+      
       default:
         return null;
     }
