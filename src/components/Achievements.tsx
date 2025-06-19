@@ -19,7 +19,6 @@ interface Achievement {
 interface AchievementsProps {
   currentIntake: number;
   dailyGoal: number;
-  streak: number;
   isDarkMode: boolean;
   onAchievementUnlocked: (coins: number) => void;
   aquaCoins: number;
@@ -29,7 +28,6 @@ interface AchievementsProps {
 const Achievements = ({ 
   currentIntake, 
   dailyGoal, 
-  streak, 
   isDarkMode, 
   onAchievementUnlocked, 
   aquaCoins,
@@ -46,7 +44,7 @@ const Achievements = ({
       unlocked: currentIntake > 0,
       progress: currentIntake > 0 ? 1 : 0,
       target: 1,
-      coins: hasEliteBadges ? 15 : 5,
+      coins: hasEliteBadges ? 225 : 75,
       isElite: hasEliteBadges,
     },
     {
@@ -57,7 +55,7 @@ const Achievements = ({
       unlocked: currentIntake >= dailyGoal * 0.5,
       progress: Math.min(currentIntake, dailyGoal * 0.5),
       target: dailyGoal * 0.5,
-      coins: hasEliteBadges ? 25 : 10,
+      coins: hasEliteBadges ? 375 : 150,
       isElite: hasEliteBadges,
     },
     {
@@ -68,18 +66,7 @@ const Achievements = ({
       unlocked: currentIntake >= dailyGoal,
       progress: Math.min(currentIntake, dailyGoal),
       target: dailyGoal,
-      coins: hasEliteBadges ? 50 : 20,
-      isElite: hasEliteBadges,
-    },
-    {
-      id: 'streak-3',
-      name: hasEliteBadges ? 'Diamond Streak' : 'Consistency',
-      description: 'Maintain a 3-day hydration streak',
-      icon: hasEliteBadges ? <Diamond className="w-6 h-6" /> : <Zap className="w-6 h-6" />,
-      unlocked: streak >= 3,
-      progress: Math.min(streak, 3),
-      target: 3,
-      coins: hasEliteBadges ? 40 : 15,
+      coins: hasEliteBadges ? 750 : 300,
       isElite: hasEliteBadges,
     },
     {
@@ -90,18 +77,18 @@ const Achievements = ({
       unlocked: currentIntake >= dailyGoal * 1.5,
       progress: Math.min(currentIntake, dailyGoal * 1.5),
       target: dailyGoal * 1.5,
-      coins: hasEliteBadges ? 75 : 30,
+      coins: hasEliteBadges ? 1125 : 450,
       isElite: hasEliteBadges,
     },
     {
-      id: 'coin-collector',
-      name: hasEliteBadges ? 'Elite Collector' : 'Coin Collector',
-      description: 'Accumulate 100 Aqua Coins',
-      icon: hasEliteBadges ? <Gem className="w-6 h-6" /> : <Star className="w-6 h-6" />,
-      unlocked: aquaCoins >= 100,
-      progress: Math.min(aquaCoins, 100),
-      target: 100,
-      coins: hasEliteBadges ? 60 : 25,
+      id: 'hydration-master',
+      name: hasEliteBadges ? 'Diamond Master' : 'Hydration Master',
+      description: 'Drink 200% of your daily goal',
+      icon: hasEliteBadges ? <Diamond className="w-6 h-6" /> : <Star className="w-6 h-6" />,
+      unlocked: currentIntake >= dailyGoal * 2,
+      progress: Math.min(currentIntake, dailyGoal * 2),
+      target: dailyGoal * 2,
+      coins: hasEliteBadges ? 1500 : 600,
       isElite: hasEliteBadges,
     },
   ];
@@ -124,7 +111,7 @@ const Achievements = ({
         });
       }
     });
-  }, [currentIntake, dailyGoal, streak, aquaCoins, achievements, unlockedAchievements, onAchievementUnlocked]);
+  }, [currentIntake, dailyGoal, achievements, unlockedAchievements, onAchievementUnlocked]);
 
   const getProgressColor = (achievement: Achievement) => {
     if (achievement.isElite) {
@@ -155,7 +142,7 @@ const Achievements = ({
         ) : (
           <Trophy className="w-8 h-8 text-yellow-500" />
         )}
-        <h3 className="font-bold text-3xl text-white">
+        <h3 className="font-light text-3xl text-white">
           {hasEliteBadges ? 'Elite Achievements' : 'Achievements'}
         </h3>
         {hasEliteBadges && (
@@ -189,7 +176,7 @@ const Achievements = ({
                   {achievement.icon}
                 </div>
                 <div>
-                  <h4 className={`font-bold text-lg ${
+                  <h4 className={`font-light text-lg ${
                     achievement.unlocked ? 'text-white' : 'text-gray-400'
                   }`}>
                     {achievement.name}
@@ -203,7 +190,7 @@ const Achievements = ({
               </div>
               <Badge 
                 variant={getBadgeVariant(achievement)} 
-                className={`${getBadgeStyle(achievement)} font-semibold`}
+                className={`${getBadgeStyle(achievement)} font-light`}
               >
                 +{achievement.coins}
               </Badge>
@@ -211,8 +198,8 @@ const Achievements = ({
             
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Progress</span>
-                <span className={achievement.unlocked ? 'text-white font-bold' : 'text-gray-400'}>
+                <span className="text-gray-400 font-light">Progress</span>
+                <span className={achievement.unlocked ? 'text-white font-light' : 'text-gray-400 font-light'}>
                   {Math.min(achievement.progress, achievement.target).toFixed(0)} / {achievement.target}
                 </span>
               </div>
@@ -235,10 +222,10 @@ const Achievements = ({
         <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-400/30">
           <div className="flex items-center gap-3 mb-3">
             <Crown className="w-6 h-6 text-purple-400" />
-            <h4 className="font-bold text-lg text-purple-300">Elite Badge Benefits</h4>
+            <h4 className="font-light text-lg text-purple-300">Elite Badge Benefits</h4>
           </div>
-          <ul className="space-y-2 text-gray-300 text-sm">
-            <li>• Higher coin rewards for achievements</li>
+          <ul className="space-y-2 text-gray-300 text-sm font-light">
+            <li>• 15x higher coin rewards for achievements</li>
             <li>• Exclusive diamond and platinum badge designs</li>
             <li>• Special achievement names and descriptions</li>
             <li>• Premium visual effects and animations</li>

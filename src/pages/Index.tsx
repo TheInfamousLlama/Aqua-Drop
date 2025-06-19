@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Droplets, Plus, Target, Trophy, TrendingUp, RotateCcw, Sun, Moon, Coins, Store, BarChart3, Coffee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,21 +35,21 @@ const Index = () => {
   const [dailyGoal, setDailyGoal] = useState(2000); // ml
   const [currentIntake, setCurrentIntake] = useState(0);
   const [drinks, setDrinks] = useState<DrinkEntry[]>([]);
-  const [streak, setStreak] = useState(7);
-  const [weeklyStreak, setWeeklyStreak] = useState(3);
-  const [bestStreak, setBestStreak] = useState(14);
   const [showGoalSetting, setShowGoalSetting] = useState(false);
   const [showAquaShop, setShowAquaShop] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [aquaCoins, setAquaCoins] = useState(125);
   const [unlockedThemes, setUnlockedThemes] = useState<string[]>(['default']);
   const [currentTheme, setCurrentTheme] = useState('default');
-  const [unlockedFeatures, setUnlockedFeatures] = useState<string[]>(['analytics-pro']);
+  const [unlockedFeatures, setUnlockedFeatures] = useState<string[]>([]);
   const [customDrinks, setCustomDrinks] = useState<CustomDrink[]>([]);
   const [activeTab, setActiveTab] = useState('overview');
-  const [weeklyAverage, setWeeklyAverage] = useState(1850);
-  const [goalAchievementRate, setGoalAchievementRate] = useState(78);
-  const [peakHours, setPeakHours] = useState('2-4 PM');
+  const [weeklyAverage, setWeeklyAverage] = useState(0);
+  const [goalAchievementRate, setGoalAchievementRate] = useState(0);
+  const [peakHours, setPeakHours] = useState('Not enough data');
+  const [bestStreak, setBestStreak] = useState(0);
+  const [totalIntake, setTotalIntake] = useState(0);
+  const [daysTracked, setDaysTracked] = useState(1);
   const { toast } = useToast();
 
   // Load data from localStorage on component mount
@@ -56,24 +57,26 @@ const Index = () => {
     const savedGoal = localStorage.getItem('waterGoal');
     const savedIntake = localStorage.getItem('todayIntake');
     const savedDrinks = localStorage.getItem('todayDrinks');
-    const savedStreak = localStorage.getItem('waterStreak');
     const savedDarkMode = localStorage.getItem('darkMode');
     const savedAquaCoins = localStorage.getItem('aquaCoins');
     const savedUnlockedThemes = localStorage.getItem('unlockedThemes');
     const savedCurrentTheme = localStorage.getItem('currentTheme');
     const savedUnlockedFeatures = localStorage.getItem('unlockedFeatures');
     const savedCustomDrinks = localStorage.getItem('customDrinks');
+    const savedTotalIntake = localStorage.getItem('totalIntake');
+    const savedDaysTracked = localStorage.getItem('daysTracked');
 
     if (savedGoal) setDailyGoal(parseInt(savedGoal));
     if (savedIntake) setCurrentIntake(parseInt(savedIntake));
     if (savedDrinks) setDrinks(JSON.parse(savedDrinks));
-    if (savedStreak) setStreak(parseInt(savedStreak));
     if (savedDarkMode) setIsDarkMode(JSON.parse(savedDarkMode));
     if (savedAquaCoins) setAquaCoins(parseInt(savedAquaCoins));
     if (savedUnlockedThemes) setUnlockedThemes(JSON.parse(savedUnlockedThemes));
     if (savedCurrentTheme) setCurrentTheme(savedCurrentTheme);
     if (savedUnlockedFeatures) setUnlockedFeatures(JSON.parse(savedUnlockedFeatures));
     if (savedCustomDrinks) setCustomDrinks(JSON.parse(savedCustomDrinks));
+    if (savedTotalIntake) setTotalIntake(parseInt(savedTotalIntake));
+    if (savedDaysTracked) setDaysTracked(parseInt(savedDaysTracked));
   }, []);
 
   // Save data to localStorage whenever it changes
@@ -81,14 +84,15 @@ const Index = () => {
     localStorage.setItem('waterGoal', dailyGoal.toString());
     localStorage.setItem('todayIntake', currentIntake.toString());
     localStorage.setItem('todayDrinks', JSON.stringify(drinks));
-    localStorage.setItem('waterStreak', streak.toString());
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     localStorage.setItem('aquaCoins', aquaCoins.toString());
     localStorage.setItem('unlockedThemes', JSON.stringify(unlockedThemes));
     localStorage.setItem('currentTheme', currentTheme);
     localStorage.setItem('unlockedFeatures', JSON.stringify(unlockedFeatures));
     localStorage.setItem('customDrinks', JSON.stringify(customDrinks));
-  }, [dailyGoal, currentIntake, drinks, streak, isDarkMode, aquaCoins, unlockedThemes, currentTheme, unlockedFeatures, customDrinks]);
+    localStorage.setItem('totalIntake', totalIntake.toString());
+    localStorage.setItem('daysTracked', daysTracked.toString());
+  }, [dailyGoal, currentIntake, drinks, isDarkMode, aquaCoins, unlockedThemes, currentTheme, unlockedFeatures, customDrinks, totalIntake, daysTracked]);
 
   // Apply dark mode to document
   useEffect(() => {
@@ -102,8 +106,15 @@ const Index = () => {
   // Update analytics based on actual data
   useEffect(() => {
     if (drinks.length > 0) {
-      const totalIntake = drinks.reduce((sum, drink) => sum + (drink.amount * drink.multiplier), 0);
-      setWeeklyAverage(Math.round(totalIntake * 0.85));
+      const dailyIntake = drinks.reduce((sum, drink) => sum + (drink.amount * drink.multiplier), 0);
+      setTotalIntake(prev => prev + dailyIntake);
+      
+      // Calculate weekly average based on total intake and days tracked
+      setWeeklyAverage(Math.round(totalIntake / daysTracked));
+      
+      // Calculate goal achievement rate
+      const goalsAchieved = currentIntake >= dailyGoal ? 1 : 0;
+      setGoalAchievementRate(Math.round((goalsAchieved / daysTracked) * 100));
       
       // Calculate peak hours based on drink timestamps
       const hourCounts = drinks.reduce((acc, drink) => {
@@ -118,11 +129,12 @@ const Index = () => {
       
       if (peakHour) {
         const hour = parseInt(peakHour);
-        const endHour = hour + 2;
-        setPeakHours(`${hour}:00-${endHour}:00`);
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+        setPeakHours(`${displayHour}:00 ${period}`);
       }
     }
-  }, [drinks]);
+  }, [drinks, currentIntake, dailyGoal, totalIntake, daysTracked]);
 
   const addWater = (amount: number, type: string = 'water', multiplier: number = 1) => {
     const effectiveAmount = amount * multiplier;
@@ -167,6 +179,7 @@ const Index = () => {
   const resetHydration = () => {
     setCurrentIntake(0);
     setDrinks([]);
+    setDaysTracked(prev => prev + 1);
     toast({
       title: "Hydration Reset",
       description: "Your daily progress has been reset!",
@@ -223,6 +236,36 @@ const Index = () => {
         return `${baseClasses} bg-gradient-to-br from-green-900/40 via-blue-900/40 to-purple-900/40`;
       case 'desert':
         return `${baseClasses} bg-gradient-to-br from-yellow-800/30 via-orange-700/30 to-red-800/30`;
+      case 'cherry-blossom':
+        return `${baseClasses} bg-gradient-to-br from-pink-800/30 via-rose-700/30 to-pink-900/30`;
+      case 'mountain-mist':
+        return `${baseClasses} bg-gradient-to-br from-slate-800/30 via-gray-700/30 to-blue-800/30`;
+      case 'tropical':
+        return `${baseClasses} bg-gradient-to-br from-teal-800/30 via-cyan-700/30 to-blue-800/30`;
+      case 'lavender-fields':
+        return `${baseClasses} bg-gradient-to-br from-purple-800/30 via-violet-700/30 to-indigo-800/30`;
+      case 'golden-wheat':
+        return `${baseClasses} bg-gradient-to-br from-amber-800/30 via-yellow-700/30 to-orange-800/30`;
+      case 'tokyo-skyline':
+        return `${baseClasses} bg-gradient-to-br from-purple-900/30 via-pink-800/30 to-blue-900/30`;
+      case 'manhattan':
+        return `${baseClasses} bg-gradient-to-br from-gray-800/30 via-slate-700/30 to-blue-800/30`;
+      case 'dubai-sunset':
+        return `${baseClasses} bg-gradient-to-br from-orange-800/30 via-red-700/30 to-purple-800/30`;
+      case 'london-fog':
+        return `${baseClasses} bg-gradient-to-br from-gray-700/30 via-slate-600/30 to-blue-700/30`;
+      case 'singapore-lights':
+        return `${baseClasses} bg-gradient-to-br from-blue-800/30 via-cyan-700/30 to-teal-800/30`;
+      case 'puppy-paradise':
+        return `${baseClasses} bg-gradient-to-br from-yellow-700/30 via-orange-600/30 to-red-700/30`;
+      case 'kitten-cuddles':
+        return `${baseClasses} bg-gradient-to-br from-pink-700/30 via-rose-600/30 to-purple-700/30`;
+      case 'penguin-play':
+        return `${baseClasses} bg-gradient-to-br from-blue-800/30 via-cyan-700/30 to-white/20`;
+      case 'baby-elephants':
+        return `${baseClasses} bg-gradient-to-br from-gray-700/30 via-slate-600/30 to-brown-700/30`;
+      case 'koala-dreams':
+        return `${baseClasses} bg-gradient-to-br from-green-700/30 via-teal-600/30 to-gray-700/30`;
       default:
         return `${baseClasses} ${isDarkMode 
           ? 'bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800' 
@@ -234,32 +277,54 @@ const Index = () => {
   const getThemeBackgroundImage = () => {
     switch (currentTheme) {
       case 'ocean':
-        return 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=2000&q=80';
+        return 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=2000&q=80';
       case 'sunset':
-        return 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=2000&q=80';
-      case 'forest':
-        return 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=80';
-      case 'night':
         return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80';
+      case 'forest':
+        return 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2000&q=80';
+      case 'night':
+        return 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&w=2000&q=80';
       case 'aurora':
         return 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=2000&q=80';
       case 'desert':
         return 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=2000&q=80';
+      case 'cherry-blossom':
+        return 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=2000&q=80';
+      case 'mountain-mist':
+        return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80';
+      case 'tropical':
+        return 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?auto=format&fit=crop&w=2000&q=80';
+      case 'lavender-fields':
+        return 'https://images.unsplash.com/photo-1499002238440-d264edd596ec?auto=format&fit=crop&w=2000&q=80';
+      case 'golden-wheat':
+        return 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=80';
+      case 'tokyo-skyline':
+        return 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=2000&q=80';
+      case 'manhattan':
+        return 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=2000&q=80';
+      case 'dubai-sunset':
+        return 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=2000&q=80';
+      case 'london-fog':
+        return 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?auto=format&fit=crop&w=2000&q=80';
+      case 'singapore-lights':
+        return 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=2000&q=80';
+      case 'puppy-paradise':
+        return 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=2000&q=80';
+      case 'kitten-cuddles':
+        return 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=2000&q=80';
+      case 'penguin-play':
+        return 'https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?auto=format&fit=crop&w=2000&q=80';
+      case 'baby-elephants':
+        return 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=2000&q=80';
+      case 'koala-dreams':
+        return 'https://images.unsplash.com/photo-1459262838948-3e2de6c1ec80?auto=format&fit=crop&w=2000&q=80';
       default:
         return null;
     }
   };
 
   const getTextColor = () => {
-    switch (currentTheme) {
-      case 'night':
-      case 'aurora':
-        return 'text-white';
-      case 'desert':
-        return 'text-gray-100';
-      default:
-        return 'text-white';
-    }
+    return 'text-white';
   };
 
   const handleThemeSwitch = (themeName: string) => {
@@ -267,6 +332,15 @@ const Index = () => {
   };
 
   const hasEliteBadges = unlockedFeatures.includes('premium-badges');
+  const hasAnalytics = unlockedFeatures.includes('analytics-pro');
+
+  // Dynamic tab calculation
+  const availableTabs = ['overview', 'achievements', 'drinks'];
+  if (hasAnalytics) availableTabs.push('analytics');
+  if (hasEliteBadges) availableTabs.push('elite');
+
+  const tabGridCols = availableTabs.length === 3 ? 'grid-cols-3' : 
+                     availableTabs.length === 4 ? 'grid-cols-4' : 'grid-cols-5';
 
   return (
     <div className={getThemeStyles()}>
@@ -284,7 +358,7 @@ const Index = () => {
       {/* Content Overlay */}
       <div className="relative z-10">
         {/* Simple Header Box */}
-        <div className={`${getTextColor()} p-8 rounded-b-[2rem] shadow-xl backdrop-blur-sm transition-all duration-1000 border-b bg-black/15 backdrop-blur-sm border-white/10`}>
+        <div className={`${getTextColor()} p-8 rounded-b-[2rem] shadow-xl backdrop-blur-sm transition-all duration-1000 border-b bg-black/25 backdrop-blur-sm border-white/20`}>
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30 shadow-lg">
@@ -341,21 +415,21 @@ const Index = () => {
             <div className="flex items-center gap-4 bg-white/15 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
               <Trophy className="w-8 h-8 text-yellow-300" />
               <div>
-                <p className="font-light text-2xl">{streak}</p>
-                <p className="text-blue-100 text-sm font-light">Day Streak</p>
+                <p className="font-light text-2xl text-white">{daysTracked}</p>
+                <p className="text-blue-100 text-sm font-light">Days Tracked</p>
               </div>
             </div>
             <div className="flex items-center gap-4 bg-white/15 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
               <Coins className="w-8 h-8 text-yellow-400" />
               <div>
-                <p className="font-light text-2xl">{aquaCoins}</p>
+                <p className="font-light text-2xl text-white">{aquaCoins}</p>
                 <p className="text-blue-100 text-sm font-light">Aqua Coins</p>
               </div>
             </div>
             <div className="flex items-center gap-4 bg-white/15 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
               <TrendingUp className="w-8 h-8 text-green-300" />
               <div>
-                <p className="font-light text-2xl">{progressPercentage.toFixed(0)}%</p>
+                <p className="font-light text-2xl text-white">{progressPercentage.toFixed(0)}%</p>
                 <p className="text-blue-100 text-sm font-light">Complete</p>
               </div>
             </div>
@@ -365,11 +439,11 @@ const Index = () => {
         <div className="p-8 space-y-10">
           {/* Navigation Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-white/10 backdrop-blur-sm border border-white/20">
+            <TabsList className={`grid w-full ${tabGridCols} bg-white/10 backdrop-blur-sm border border-white/20`}>
               <TabsTrigger value="overview" className="data-[state=active]:bg-white/30 text-white font-light">Overview</TabsTrigger>
               <TabsTrigger value="achievements" className="data-[state=active]:bg-white/30 text-white font-light">Achievements</TabsTrigger>
               <TabsTrigger value="drinks" className="data-[state=active]:bg-white/30 text-white font-light">Custom Drinks</TabsTrigger>
-              {unlockedFeatures.includes('analytics-pro') && (
+              {hasAnalytics && (
                 <TabsTrigger value="analytics" className="data-[state=active]:bg-white/30 text-white font-light">Analytics</TabsTrigger>
               )}
               {hasEliteBadges && (
@@ -426,7 +500,6 @@ const Index = () => {
               <Achievements 
                 currentIntake={currentIntake} 
                 dailyGoal={dailyGoal} 
-                streak={streak} 
                 isDarkMode={true}
                 onAchievementUnlocked={awardAchievementCoins}
                 aquaCoins={aquaCoins}
@@ -443,7 +516,7 @@ const Index = () => {
               />
             </TabsContent>
 
-            {unlockedFeatures.includes('analytics-pro') && (
+            {hasAnalytics && (
               <TabsContent value="analytics" className="space-y-10">
                 <Card className="p-8 border-0 shadow-2xl backdrop-blur-sm transition-all duration-700 rounded-3xl bg-white/5 backdrop-blur-sm text-white border border-white/10">
                   <div className="flex items-center gap-3 mb-6">
@@ -459,27 +532,27 @@ const Index = () => {
                     <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
                       <h4 className="font-light text-lg mb-4 text-green-300">Goal Achievement Rate</h4>
                       <p className="text-3xl font-light text-white">{goalAchievementRate}%</p>
-                      <p className="text-white/60 text-sm mt-2 font-light">Days you've reached your goal this month</p>
+                      <p className="text-white/60 text-sm mt-2 font-light">Days you've reached your goal</p>
                     </div>
                     <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                      <h4 className="font-light text-lg mb-4 text-purple-300">Best Streak</h4>
-                      <p className="text-3xl font-light text-white">{bestStreak} days</p>
-                      <p className="text-white/60 text-sm mt-2 font-light">Your longest hydration streak</p>
-                    </div>
-                    <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                      <h4 className="font-light text-lg mb-4 text-orange-300">Peak Hours</h4>
+                      <h4 className="font-light text-lg mb-4 text-purple-300">Peak Hours</h4>
                       <p className="text-3xl font-light text-white">{peakHours}</p>
                       <p className="text-white/60 text-sm mt-2 font-light">When you hydrate the most</p>
                     </div>
                     <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                      <h4 className="font-light text-lg mb-4 text-cyan-300">Weekly Streak</h4>
-                      <p className="text-3xl font-light text-white">{weeklyStreak} weeks</p>
-                      <p className="text-white/60 text-sm mt-2 font-light">Consecutive weeks meeting goals</p>
+                      <h4 className="font-light text-lg mb-4 text-cyan-300">Total Intake</h4>
+                      <p className="text-3xl font-light text-white">{totalIntake}ml</p>
+                      <p className="text-white/60 text-sm mt-2 font-light">Lifetime hydration tracked</p>
                     </div>
                     <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
                       <h4 className="font-light text-lg mb-4 text-pink-300">Today's Performance</h4>
                       <p className="text-3xl font-light text-white">{progressPercentage.toFixed(0)}%</p>
                       <p className="text-white/60 text-sm mt-2 font-light">Progress towards daily goal</p>
+                    </div>
+                    <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                      <h4 className="font-light text-lg mb-4 text-orange-300">Days Tracked</h4>
+                      <p className="text-3xl font-light text-white">{daysTracked}</p>
+                      <p className="text-white/60 text-sm mt-2 font-light">Total days using Aqua Drop</p>
                     </div>
                   </div>
                 </Card>
@@ -491,7 +564,6 @@ const Index = () => {
                 <Achievements 
                   currentIntake={currentIntake} 
                   dailyGoal={dailyGoal} 
-                  streak={streak} 
                   isDarkMode={true}
                   onAchievementUnlocked={awardAchievementCoins}
                   aquaCoins={aquaCoins}

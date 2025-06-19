@@ -42,9 +42,14 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
     { amount: 3000, label: '3.0L', icon: '🏃', description: 'High performance' },
   ];
 
+  const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
+  const mutedTextColor = isDarkMode ? 'text-white/70' : 'text-gray-600';
+  const cardBg = isDarkMode ? 'bg-white/5 border-white/20' : 'bg-white/95 border-gray-200';
+  const inputBg = isDarkMode ? 'bg-white/10 border-white/20 text-white placeholder-white/50' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500';
+
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto border-2 transition-all duration-500 bg-white/5 backdrop-blur-xl border-white/20 text-white">
+      <Card className={`w-full max-w-md rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto border-2 transition-all duration-500 backdrop-blur-xl ${cardBg} ${textColor}`}>
         <div className="p-8">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
@@ -52,11 +57,11 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
                 <Target className="w-8 h-8 text-blue-400" />
               </div>
               <div>
-                <h2 className="text-2xl font-light text-white">Set Your Goal</h2>
-                <p className="text-sm text-white/70 font-light">Personalize your hydration target</p>
+                <h2 className={`text-2xl font-light ${textColor}`}>Set Your Goal</h2>
+                <p className={`text-sm font-light ${mutedTextColor}`}>Personalize your hydration target</p>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose} className="text-white/70 hover:bg-white/10">
+            <Button variant="ghost" size="sm" onClick={onClose} className={`${mutedTextColor} hover:bg-white/10`}>
               <X className="w-6 h-6" />
             </Button>
           </div>
@@ -69,7 +74,7 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
             
             <div className="space-y-5">
               <div>
-                <Label htmlFor="weight" className="text-sm font-light text-white/80">
+                <Label htmlFor="weight" className={`text-sm font-light ${mutedTextColor}`}>
                   Weight (kg)
                 </Label>
                 <Input
@@ -78,12 +83,12 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
                   placeholder="e.g., 70"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  className="mt-2 bg-white/10 border-white/20 text-white placeholder-white/50 font-light"
+                  className={`mt-2 font-light ${inputBg}`}
                 />
               </div>
 
               <div>
-                <Label className="text-sm font-light text-white/80 mb-3 block">
+                <Label className={`text-sm font-light ${mutedTextColor} mb-3 block`}>
                   Activity Level
                 </Label>
                 <div className="grid grid-cols-3 gap-3">
@@ -100,7 +105,9 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
                       className={`flex flex-col gap-2 h-auto py-3 font-light ${
                         activityLevel === level.key 
                           ? 'bg-blue-600/80 text-white shadow-lg border-blue-400/50' 
-                          : 'border-white/20 text-white/70 hover:bg-white/10'
+                          : isDarkMode 
+                            ? 'border-white/20 text-white/70 hover:bg-white/10'
+                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
                       <span className="text-xl">{level.icon}</span>
@@ -112,7 +119,7 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
 
               {weight && (
                 <div className="flex items-center justify-between p-4 rounded-xl border-2 bg-white/10 border-blue-400/30">
-                  <span className="text-sm font-light text-white/80">Recommended:</span>
+                  <span className={`text-sm font-light ${mutedTextColor}`}>Recommended:</span>
                   <span className="text-xl font-light text-blue-400">{recommendedGoal}ml</span>
                 </div>
               )}
@@ -120,7 +127,7 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
           </div>
 
           <div className="mb-8">
-            <Label className="text-sm font-light text-white/80 mb-4 block">
+            <Label className={`text-sm font-light ${mutedTextColor} mb-4 block`}>
               Quick Presets
             </Label>
             <div className="grid grid-cols-2 gap-4">
@@ -129,18 +136,24 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
                   key={preset.amount}
                   variant="outline"
                   onClick={() => setCustomGoal(preset.amount.toString())}
-                  className="flex flex-col gap-3 h-auto py-5 transition-all duration-300 border-white/20 text-white/70 hover:bg-blue-600/20 hover:border-blue-400/50 font-light"
+                  className={`flex flex-col gap-3 h-auto py-5 transition-all duration-300 font-light ${
+                    isDarkMode 
+                      ? 'border-white/20 text-white/70 hover:bg-blue-600/20 hover:border-blue-400/50'
+                      : 'border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-400/50'
+                  }`}
                 >
                   <span className="text-3xl">{preset.icon}</span>
                   <span className="font-light text-lg">{preset.label}</span>
-                  <span className="text-xs text-white/50 font-light">{preset.description}</span>
+                  <span className={`text-xs font-light ${isDarkMode ? 'text-white/50' : 'text-gray-500'}`}>
+                    {preset.description}
+                  </span>
                 </Button>
               ))}
             </div>
           </div>
 
           <div className="mb-8">
-            <Label htmlFor="customGoal" className="text-sm font-light text-white/80 mb-3 block">
+            <Label htmlFor="customGoal" className={`text-sm font-light ${mutedTextColor} mb-3 block`}>
               Custom Goal (ml)
             </Label>
             <Input
@@ -151,7 +164,7 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
               placeholder="Enter custom amount"
               min="500"
               max="5000"
-              className="text-lg bg-white/10 border-white/20 text-white placeholder-white/50 font-light"
+              className={`text-lg font-light ${inputBg}`}
             />
           </div>
 
@@ -159,7 +172,11 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
             <Button 
               variant="outline" 
               onClick={onClose} 
-              className="flex-1 border-white/20 text-white/70 hover:bg-white/10 font-light"
+              className={`flex-1 font-light ${
+                isDarkMode 
+                  ? 'border-white/20 text-white/70 hover:bg-white/10'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
             >
               Cancel
             </Button>
@@ -176,7 +193,9 @@ const GoalSetting = ({ currentGoal, onGoalSet, onClose, isDarkMode = false }: Go
             <Button
               variant="ghost"
               onClick={() => onGoalSet(recommendedGoal)}
-              className="w-full mt-4 font-light text-blue-400 hover:bg-blue-600/20"
+              className={`w-full mt-4 font-light text-blue-400 ${
+                isDarkMode ? 'hover:bg-blue-600/20' : 'hover:bg-blue-50'
+              }`}
             >
               Use Recommended ({recommendedGoal}ml)
             </Button>
